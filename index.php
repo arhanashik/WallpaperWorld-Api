@@ -24,6 +24,19 @@
               <input type="text" class="form-control" id="title" name="title" placeholder="" required>
             </div>
             <div class="form-group">
+              <label for="tag">Wallpaper tag</label>
+              <select class="form-control" id="tag" name="tag">
+                <option>Photography</option>
+                <option>Nature</option>
+                <option>Art</option>
+                <option>Animal</option>
+                <option>Love</option>
+                <option>Life</option>
+                <option>Travel</option>
+                <option>Color</option>
+              </select>
+            </div>
+            <div class="form-group">
               <label for="price">Wallpaper price</label>
               <input type="number" class="form-control" id="price" name="price" value="0">
             </div>
