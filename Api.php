@@ -6,17 +6,43 @@ require_once dirname(__FILE__) . '/Util.php';
  
 $response = array();
 $response['error'] = true;
-$response['message'] = 'Required parameters are missing';
+$response['message'] = 'Required parameter(s) are missing';
+
+$util = new Util();
+$upload = new FileHandler();
+$db = new DbHandler();
  
 if (isset($_GET['call'])) {
     switch ($_GET['call']) {
+		case 'signup':
+			if (isset($_POST['name']) && strlen($_POST['name']) > 0 && (isset($_POST['username']) || isset($_POST['email']))
+				&& isset($_POST['password']) && isset($_POST['avatar']) && isset($_POST['auth_type']) ) {
+
+				$name = $_POST['name'];
+				$username = $_POST['username'];
+				$password = $_POST['password'];
+				$email = $_POST['email'];
+				$avatar = $_POST['avatar'];
+				$auth_type = $_POST['auth_type'];
+				
+				if(!empty($name) && !(empty($username) || empty($email)) && !empty($password) && !empty($avatar) && !empty($auth_type)) {
+					if($user = $db->getUser($username, $password, $email)) {
+						$response['error'] = false;
+						$response['message'] = 'Welcome back ' . $name;
+						$response['user'] = $user;
+					} else {
+						if($user = $db->signup($name, $username, $password, $email, $avatar, $auth_type)) {
+							$response['error'] = false;
+							$response['message'] = 'Signup successfull';
+							$response['user'] = $user;
+						}
+					}
+				}
+			}
+			break;
         case 'upload':
  
             if (isset($_POST['title']) && strlen($_POST['title']) > 0 && isset($_POST['uploader_id'])) {
-                $util = new Util();
-				$upload = new FileHandler();
-				$db = new DbHandler();
- 
 				$file = $_FILES['file']['tmp_name'];
 
 				$invalidImage = $util->isNotSupportedImage($_FILES['file']);
@@ -55,8 +81,6 @@ if (isset($_GET['call'])) {
 
 			$files_arr = $_FILES['files'];
 			if (!empty($files_arr)) {
-				$util = new Util();
-				$upload = new FileHandler();
 				$urls = array();
 				
 				$files_desc = $util->reArrayFiles($files_arr);
@@ -91,7 +115,6 @@ if (isset($_GET['call'])) {
 			$page = 0;
 			if(!empty($_GET['page'])) $page = $_GET['page'];
 
-			$db = new DbHandler();
 			$wallpapers = $db->getAllWallpapers($id, $type, $page);
 
             $response['error'] = false;
@@ -111,12 +134,29 @@ if (isset($_GET['call'])) {
 			$page = 0;
 			if(!empty($_GET['page'])) $page = $_GET['page'];
 
-			$db = new DbHandler();
 			$wallpapers = $db->searchWallpaper($id, $query, $page);
 
             $response['error'] = false;
             $response['message'] = 'Total ' . count($wallpapers) . ' wallpaper(s) found';
             $response['wallpapers'] = $wallpapers;
+ 
+			break;
+			
+		case 'favorite':
+
+			if(!empty($_GET['id']) && !empty($_GET['wallpaper_id'])) {
+				$user_id =  $_POST['id'];
+				$wallpaper_id = $_POST['wallpaper_id'];
+
+				$inserted = $db->insertFavorite($user_id, $wallpaper_id);
+	
+				if($inserted) {
+					$response['error'] = false;
+					$response['message'] = 'Wallpaper added to favourite list!';
+				}else {
+					$response['message'] = 'Failed to add in favourite list!';
+				}
+			}
  
             break;
     }
