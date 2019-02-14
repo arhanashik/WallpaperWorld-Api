@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 06, 2019 at 08:02 AM
+-- Generation Time: Feb 14, 2019 at 02:03 PM
 -- Server version: 10.1.30-MariaDB
 -- PHP Version: 7.2.2
 
@@ -49,7 +49,7 @@ CREATE TABLE `user` (
   `password` varchar(150) NOT NULL,
   `email` varchar(150) NOT NULL,
   `upload_count` int(11) NOT NULL DEFAULT '0',
-  `avatar` varchar(1000) NOT NULL,
+  `avatar` varchar(1000) DEFAULT NULL,
   `auth_type` varchar(50) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -72,6 +72,7 @@ CREATE TABLE `wallpaper` (
   `total_wow` int(11) NOT NULL DEFAULT '0',
   `total_download` int(11) NOT NULL DEFAULT '0',
   `uploader_id` int(11) NOT NULL,
+  `status` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -112,7 +113,7 @@ ALTER TABLE `favorite`
 -- AUTO_INCREMENT for table `user`
 --
 ALTER TABLE `user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `wallpaper`

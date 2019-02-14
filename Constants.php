@@ -11,6 +11,11 @@ define('UPLOAD_PATH', '/uploads/');
 define('WALLPAPER_PATH', UPLOAD_PATH . 'wallpaper/');
 define('AVATAR_PATH',  UPLOAD_PATH . 'avatar/');
 
+define('REJECTED', -1);
+define('PENDING', 0);
+define('PUBLISHED', 1);
+define('HIDDEN', 2);
+
 define('PAGE_LIMIT',  5);
 
 define('ALLOWED_EXTENTION',  array("png","jpg","jpeg"));

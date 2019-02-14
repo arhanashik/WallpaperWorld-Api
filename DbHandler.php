@@ -35,8 +35,8 @@ class DbHandler
                 $user['username'] = $row[2];
                 $user['email'] = $row[4];
                 $user['upload_count'] = $row[5];
-                $user['avatar'] = $row[5];
-                $user['auth_type'] = $row[6];
+                $user['avatar'] = $row[6];
+                $user['auth_type'] = $row[7];
                 break;
             }
             $result->close();
@@ -63,26 +63,40 @@ class DbHandler
         
         switch($type) {
             case 'collection':
-                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.total_wow, u.id, u.name FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) ORDER BY w.created_at DESC";
+                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.tag, w.price, w.total_wow, w.total_download, w.status, u.id, u.name 
+                FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) 
+                WHERE w.status = " . PUBLISHED . " ORDER BY w.created_at DESC";
                 break;
 
             case 'top_chart':
-                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.total_wow, u.id, u.name FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) ORDER BY w.total_download DESC";
+                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.tag, w.price, w.total_wow, w.total_download, w.status, u.id, u.name  
+                FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) 
+                WHERE w.status = " . PUBLISHED . " ORDER BY w.total_download DESC";
                 break;
 
             case 'popular':
-                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.total_wow, u.id, u.name FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) ORDER BY w.total_wow DESC";
+                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.tag, w.price, w.total_wow, w.total_download, w.status, u.id, u.name  
+                FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) 
+                WHERE w.status = " . PUBLISHED . " ORDER BY w.total_wow DESC";
                 break;
 
             case 'premium':
-                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.total_wow, u.id, u.name FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) WHERE w.price > 0 ORDER BY w.created_at DESC";
+                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.tag, w.price, w.total_wow, w.total_download, w.status, u.id, u.name  
+                FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) 
+                WHERE w.status = " . PUBLISHED . " AND  w.price > 0 ORDER BY w.created_at DESC";
                 break;
 
             case 'favorite':
-                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.total_wow, u.id, u.name 
+                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.tag, w.price, w.total_wow, w.total_download, w.status, u.id, u.name 
                 FROM ((favorite AS f INNER JOIN wallpaper AS w ON f.wallpaper_id = w.id) 
                 LEFT JOIN user AS u ON w.uploader_id = u.id) 
-                WHERE f.user_id = $id ORDER BY w.created_at DESC";
+                WHERE w.status = " . PUBLISHED . " AND f.user_id = $id ORDER BY w.created_at DESC";
+                break;
+
+            case 'own':
+                $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.tag, w.price, w.total_wow, w.total_download, w.status, u.id, u.name  
+                FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) 
+                WHERE  w.uploader_id = $id ORDER BY w.created_at DESC";
                 break;
         }
 
@@ -92,7 +106,7 @@ class DbHandler
         
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
-        $stmt->bind_result($id, $title, $url, $width, $height, $total_wow, $u_id, $name);
+        $stmt->bind_result($id, $title, $url, $width, $height, $tag, $price, $total_wow, $total_download, $status, $u_id, $name);
 
         $wallpapers = array();
  
@@ -105,7 +119,11 @@ class DbHandler
             $wallpaper['url'] = $absurl;
             $wallpaper['width'] = $width;
             $wallpaper['height'] = $height;
+            $wallpaper['tag'] = $tag;
+            $wallpaper['price'] = $price;
             $wallpaper['total_wow'] = $total_wow;
+            $wallpaper['total_download'] = $total_download;
+            $wallpaper['status'] = $status;
             $wallpaper['uploader_id'] = $u_id;
             $wallpaper['uploader_name'] = $name;
 
@@ -117,9 +135,9 @@ class DbHandler
 
     public function searchWallpaper($id, $query, $page)
     {
-        $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.total_wow, u.id, u.name 
+        $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.tag, w.price, w.total_wow, w.total_download, w.status, u.id, u.name
         FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) 
-        WHERE w.title LIKE '%$query%' OR w.tag LIKE '%$query%' 
+        WHERE w.status = " . PUBLISHED . " AND (w.title LIKE '%$query%' OR w.tag LIKE '%$query%')
         ORDER BY w.created_at DESC";
 
         $start = $page * PAGE_LIMIT;
@@ -128,7 +146,7 @@ class DbHandler
         
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
-        $stmt->bind_result($id, $title, $url, $width, $height, $total_wow, $u_id, $name);
+        $stmt->bind_result($id, $title, $url, $width, $height, $tag, $price, $total_wow, $total_download, $status, $u_id, $name);
 
         $wallpapers = array();
  
@@ -141,7 +159,11 @@ class DbHandler
             $wallpaper['url'] = $absurl;
             $wallpaper['width'] = $width;
             $wallpaper['height'] = $height;
+            $wallpaper['tag'] = $tag;
+            $wallpaper['price'] = $price;
             $wallpaper['total_wow'] = $total_wow;
+            $wallpaper['total_download'] = $total_download;
+            $wallpaper['status'] = $status;
             $wallpaper['uploader_id'] = $u_id;
             $wallpaper['uploader_name'] = $name;
 
