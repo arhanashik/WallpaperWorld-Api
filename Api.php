@@ -144,17 +144,20 @@ if (isset($_GET['call'])) {
 			
 		case 'favorite':
 
-			if(!empty($_GET['id']) && !empty($_GET['wallpaper_id'])) {
+			if(!empty($_POST['id']) && !empty($_POST['wallpaper_id'])) {
 				$user_id =  $_POST['id'];
 				$wallpaper_id = $_POST['wallpaper_id'];
 
-				$inserted = $db->insertFavorite($user_id, $wallpaper_id);
-	
-				if($inserted) {
-					$response['error'] = false;
-					$response['message'] = 'Wallpaper added to favourite list!';
-				}else {
-					$response['message'] = 'Failed to add in favourite list!';
+				if($db->getFavorite($user_id, $wallpaper_id)) {
+					$response['message'] = 'Already added to your favourite list!';
+					
+				} else {
+					if($db->insertFavorite($user_id, $wallpaper_id)) {
+						$response['error'] = false;
+						$response['message'] = 'Wallpaper added to favourite list!';
+					}else {
+						$response['message'] = 'Failed to add in favourite list!';
+					}
 				}
 			}
  

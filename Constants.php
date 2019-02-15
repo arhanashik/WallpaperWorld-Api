@@ -16,7 +16,7 @@ define('PENDING', 0);
 define('PUBLISHED', 1);
 define('HIDDEN', 2);
 
-define('PAGE_LIMIT',  5);
+define('PAGE_LIMIT',  20);
 
 define('ALLOWED_EXTENTION',  array("png","jpg","jpeg"));
 define('MAX_SIZE',  2000000);
