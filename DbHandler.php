@@ -15,7 +15,8 @@ class DbHandler
     public function signup($name, $username, $password, $email, $avatar, $auth_type) {
         $enc_password = md5($password);
 
-        $sql = "INSERT INTO `user` (name, username, password, email, avatar, auth_type) VALUES (" . '"' .$name . '"' . ", '$username', '$enc_password', '$email', '$avatar', '$auth_type')";
+        $sql = "INSERT INTO `user` (name, username, password, email, avatar, auth_type) 
+        VALUES (" . '"' . $name . '"' . ", '$username', '$enc_password', '$email', '$avatar', '$auth_type')";
         $stmt = $this->con->prepare($sql);
         $stmt->execute();
         $stmt->close();
@@ -46,11 +47,13 @@ class DbHandler
         return false;
     }
 
-    public function insertWallpaper($title, $url, $width, $height, $price, $tag, $uploader_id)
+    public function insertWallpaper($title, $url, $width, $height, $tag, $price, $uploader_id)
     {
-        $sql = "INSERT INTO wallpaper (title, url, width, height, price, tag, uploader_id) VALUES (" . '"' .$title . '"' . ", '$url', '$width', '$height', '$price', '$tag', '$uploader_id')";
+        $sql = "INSERT INTO `wallpaper` (title, url, width, height, tag, price, uploader_id) 
+        VALUES (" . '"' . $title . '"' . ", '$url', '$width', '$height', '$tag', '$price', '$uploader_id')";
         $stmt = $this->con->prepare($sql);
         if ($stmt->execute()) {
+			$stmt->close();
             return true;
         }
 		

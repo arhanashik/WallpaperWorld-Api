@@ -52,21 +52,20 @@ if (isset($_GET['call'])) {
 				else {
 					$title = $_POST['title'];
 					$dimen = $util->getImageDimen($file);
-					$price = $_POST['price'];
 					$tag = $_POST['tag'];
+					$price = $_POST['price'];
 					$uploader_id = $_POST['uploader_id'];
 
 					$url = $upload->uploadWallpaper($file, $util->getFileExtension($_FILES['file']['name']));
 					if (!$url) {
 						$response['message'] = 'File not uploaded';
-					
 					} else {
-						$inserted = $db->insertWallpaper($title, $url, $dimen['width'], $dimen['height'], $price, $tag, $uploader_id);
+						$inserted = $db->insertWallpaper($title, $url, $dimen['width'], $dimen['height'], $tag, $price, $uploader_id);
 						if($inserted) {
 							$absurl = BASE_URL . WALLPAPER_PATH . $url;
 						
 							$response['error'] = false;
-							$response['message'] = 'File Uploaded Successfullly';
+							$response['message'] = 'File Uploaded Successfully';
 							$response['url'] = $absurl;
 						}else {
 							$response['message'] = 'File uploaded but not added to db';
@@ -97,7 +96,7 @@ if (isset($_GET['call'])) {
 				}
 				
 				$response['error'] = false;
-				$response['message'] = 'File Uploaded Successfullly';
+				$response['message'] = 'File Uploaded Successfully';
 				$response['urls'] = $urls;
 
 			}
@@ -149,14 +148,14 @@ if (isset($_GET['call'])) {
 				$wallpaper_id = $_POST['wallpaper_id'];
 
 				if($db->getFavorite($user_id, $wallpaper_id)) {
-					$response['message'] = 'Already added to your favourite list!';
+					$response['message'] = 'Already added to your favorite list!';
 					
 				} else {
 					if($db->insertFavorite($user_id, $wallpaper_id)) {
 						$response['error'] = false;
-						$response['message'] = 'Wallpaper added to favourite list!';
+						$response['message'] = 'Wallpaper added to favorite list!';
 					}else {
-						$response['message'] = 'Failed to add in favourite list!';
+						$response['message'] = 'Failed to add in favorite list!';
 					}
 				}
 			}
