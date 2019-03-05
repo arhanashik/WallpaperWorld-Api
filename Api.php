@@ -60,13 +60,13 @@ if (isset($_GET['call'])) {
 					if (!$url) {
 						$response['message'] = 'File not uploaded';
 					} else {
-						$inserted = $db->insertWallpaper($title, $url, $dimen['width'], $dimen['height'], $tag, $price, $uploader_id);
-						if($inserted) {
+						$insertedWallpaper = $db->insertWallpaper($title, $url, $dimen['width'], $dimen['height'], $tag, $price, $uploader_id);
+						if($insertedWallpaper) {
 							$absurl = BASE_URL . WALLPAPER_PATH . $url;
 						
 							$response['error'] = false;
 							$response['message'] = 'File Uploaded Successfully';
-							$response['url'] = $absurl;
+							$response['wallpaper'] = $insertedWallpaper;
 						}else {
 							$response['message'] = 'File uploaded but not added to db';
 						}

@@ -54,9 +54,42 @@ class DbHandler
         $stmt = $this->con->prepare($sql);
         if ($stmt->execute()) {
 			$stmt->close();
-            return true;
+            return $this->getWallpaper($url);
         }
 		
+        return false;
+    }
+
+    public function getWallpaper($url)
+    {
+        $sql = "SELECT w.id, w.title, w.url, w.width, w.height, w.tag, w.price, w.total_wow, w.total_download, w.status, u.id, u.name
+        FROM wallpaper AS w LEFT JOIN user AS u ON (w.uploader_id = u.id) 
+        WHERE w.url = '$url'";
+        
+        $stmt = $this->con->prepare($sql);
+        $stmt->execute();
+        $stmt->bind_result($id, $title, $url, $width, $height, $tag, $price, $total_wow, $total_download, $status, $u_id, $name);
+ 
+        while ($stmt->fetch()) {
+            $absurl = BASE_URL . WALLPAPER_PATH . $url;
+ 
+            $wallpaper = array();
+            $wallpaper['id'] = $id;
+            $wallpaper['title'] = $title;
+            $wallpaper['url'] = $absurl;
+            $wallpaper['width'] = $width;
+            $wallpaper['height'] = $height;
+            $wallpaper['tag'] = $tag;
+            $wallpaper['price'] = $price;
+            $wallpaper['total_wow'] = $total_wow;
+            $wallpaper['total_download'] = $total_download;
+            $wallpaper['status'] = $status;
+            $wallpaper['uploader_id'] = $u_id;
+            $wallpaper['uploader_name'] = $name;
+
+            return $wallpaper;
+        }
+ 
         return false;
     }
 
