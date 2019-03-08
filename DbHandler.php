@@ -53,7 +53,11 @@ class DbHandler
         VALUES (" . '"' . $title . '"' . ", '$url', '$width', '$height', '$tag', '$price', '$uploader_id')";
         $stmt = $this->con->prepare($sql);
         if ($stmt->execute()) {
-			$stmt->close();
+			$sql = "UPDATE `user` SET upload_count = upload_count + 1 WHERE id = '$uploader_id'";
+            $stmt = $this->con->prepare($sql);
+            $stmt->execute();
+            $stmt->close();
+
             return $this->getWallpaper($url);
         }
 		
