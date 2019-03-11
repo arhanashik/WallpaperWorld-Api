@@ -160,6 +160,27 @@ if (isset($_GET['call'])) {
 				}
 			}
  
+			break;
+			
+		case 'remove_favorite':
+
+			if(!empty($_POST['id']) && !empty($_POST['wallpaper_id'])) {
+				$user_id =  $_POST['id'];
+				$wallpaper_id = $_POST['wallpaper_id'];
+
+				if(!$db->getFavorite($user_id, $wallpaper_id)) {
+					$response['message'] = 'This item is removed from your favorite list!';
+					
+				} else {
+					if($db->removeFavorite($user_id, $wallpaper_id)) {
+						$response['error'] = false;
+						$response['message'] = 'Wallpaper removed from favorite list!';
+					}else {
+						$response['message'] = 'Failed to removed from  favorite list!';
+					}
+				}
+			}
+ 
             break;
     }
 }

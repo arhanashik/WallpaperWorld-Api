@@ -238,4 +238,19 @@ class DbHandler
         return false;
     }
 
+    public function removeFavorite($user_id, $wallpaper_id)
+    {
+        $sql = "UPDATE `wallpaper` SET total_wow = total_wow - 1 WHERE id = '$wallpaper_id'";
+        $stmt = $this->con->prepare($sql);
+        if ($stmt->execute()) {
+            $sql = "DELETE FROM `favorite` WHERE user_id = '$user_id' AND wallpaper_id = '$wallpaper_id'";
+            $stmt = $this->con->prepare($sql);
+
+            if ($stmt->execute())
+                return true;
+        }
+		
+        return false;
+    }
+
 }
